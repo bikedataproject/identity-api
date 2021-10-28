@@ -1,0 +1,48 @@
+name: staging
+
+on:
+  push:
+    branches: [ develop ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2  
+    - name: Prepare NuGet.Config
+      uses: datamonsters/replace-action@v2
+      with:
+        files: 'NuGet.Config.actions'
+        replacements: '%%username%%=xivk,%%token%%=${{ secrets.PACKAGES_SECRET }}'     
+    - run: mv NuGet.Config.actions NuGet.Config 
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.1.x
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore            
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    - name: Publish project
+      run: dotnet publish -c release
+      working-directory: ./src/BikeDataProject.Identity.API/
+    - run: mv ./src/BikeDataProject.Identity.API/appsettings.staging.json ./src/BikeDataProject.Identity.API/appsettings.json
+    - name: Login to Dock Hub
+      run: echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u xivk --password-stdin
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag bikedataproject/identity-api:staging --tag bikedataproject/identity-api:staging-0.$GITHUB_RUN_NUMBER
+      working-directory: ./src/BikeDataProject.Identity.API/
+    - name: Publish the image.
+      run: docker push bikedataproject/identity-api:staging
+      working-directory: ./src/BikeDataProject.Identity.API/
+    - name: Publish the image versioned.
+      run: docker push bikedataproject/identity-api:staging-0.$GITHUB_RUN_NUMBER
+      working-directory: ./src/BikeDataProject.Identity.API/
