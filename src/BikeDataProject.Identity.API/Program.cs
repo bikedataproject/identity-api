@@ -130,7 +130,7 @@ namespace BikeDataProject.Identity.API
                         // Add application services.
                         services.AddTransient<IEmailSender, EmailSender>();
 
-                        //services.AddRouting(options => options.LowercaseUrls = true);
+                        services.AddRouting(options => options.LowercaseUrls = true);
                         services.AddControllers();
                         services.AddOpenApiDocument(); // add OpenAPI v3 document
 
@@ -195,6 +195,8 @@ namespace BikeDataProject.Identity.API
                     app.UseStaticFiles();
 
                     app.UseCors("CORS");
+                    
+                    app.UseRouting();
 
                     // app.UseAuthentication(); // not needed, since UseIdentityServer adds the authentication middleware
                     app.UseIdentityServer();
@@ -240,7 +242,10 @@ namespace BikeDataProject.Identity.API
                         };
                     });
 
-                    app.UseRouting();
+                    app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapControllers();
+                    });
                 })
                 .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
                     .ReadFrom.Configuration(hostingContext.Configuration)
