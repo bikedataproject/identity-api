@@ -22,6 +22,17 @@ namespace BikeDataProject.Identity.API.Extensions
         }
 
         /// <summary>
+        /// Encodes the email as base64.
+        /// </summary>
+        /// <param name="email">The email.</param>
+        /// <returns>The encoded email.</returns>
+        public static string EncodeBase64(this string email)
+        {
+            var tokenGeneratedBytes = Encoding.UTF8.GetBytes(email);
+            return WebEncoders.Base64UrlEncode(tokenGeneratedBytes);
+        }
+
+        /// <summary>
         /// Decodes the confirmation token before validating it.
         /// </summary>
         /// <param name="confirmationTokenBase64">The encoded token.</param>
@@ -29,6 +40,17 @@ namespace BikeDataProject.Identity.API.Extensions
         public static string DecodeConfirmationToken(string confirmationTokenBase64)
         {
             var codeDecodedBytes = WebEncoders.Base64UrlDecode(confirmationTokenBase64);
+            return Encoding.UTF8.GetString(codeDecodedBytes);
+        }
+
+        /// <summary>
+        /// Decodes the email.
+        /// </summary>
+        /// <param name="encodedEmail">The encoded email.</param>
+        /// <returns>The email.</returns>
+        public static string DecodeBase64(this string encodedEmail)
+        {
+            var codeDecodedBytes = WebEncoders.Base64UrlDecode(encodedEmail);
             return Encoding.UTF8.GetString(codeDecodedBytes);
         }
     }

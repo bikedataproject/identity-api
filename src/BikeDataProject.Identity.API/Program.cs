@@ -8,6 +8,7 @@ using BikeDataProject.Identity.API.Data;
 using BikeDataProject.Identity.API.Extensions;
 using BikeDataProject.Identity.API.Policies;
 using BikeDataProject.Identity.API.Services;
+using BikeDataProject.Identity.API.Services.Mailjet;
 using Fitbit.Api.Portable;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -128,7 +129,13 @@ namespace BikeDataProject.Identity.API
                         });
 
                         // Add application services.
-                        services.AddTransient<IEmailSender, EmailSender>();
+                        services.AddSingleton(new MailjetConfiguration()
+                        {
+                            ApiKey = hostingContext.Configuration.GetValueOrDefault("MAILJET_APIKEY"),
+                            ApiSecret = hostingContext.Configuration.GetValueOrDefault("MAILJET_APISECRET"),
+                            FitbitTemplateId = int.Parse(hostingContext.Configuration.GetValueOrDefault("MAILJET_TEMPLATE_FITBIT"))
+                        });
+                        services.AddTransient<IEmailSender, MailjetEmailSender>();
 
                         services.AddRouting(options => options.LowercaseUrls = true);
                         services.AddControllers();
@@ -174,8 +181,7 @@ namespace BikeDataProject.Identity.API
                         var fitbitCredentials = new FitbitAppCredentials()
                         {
                             ClientId = hostingContext.Configuration.GetValueOrDefault("FITBIT_CLIENT_ID"),
-                            ClientSecret =
-                                File.ReadAllText(hostingContext.Configuration.GetValueOrDefault("FITBIT_CLIENT_SECRET"))
+                            ClientSecret = hostingContext.Configuration.GetValueOrDefault("FITBIT_CLIENT_SECRET")
                         };
                         services.AddSingleton(new FitbitAccountControllerSettings()
                         {
@@ -198,6 +204,7 @@ namespace BikeDataProject.Identity.API
                     
                     app.UseRouting();
 
+                    app.UseAuthorization();
                     // app.UseAuthentication(); // not needed, since UseIdentityServer adds the authentication middleware
                     app.UseIdentityServer();
 

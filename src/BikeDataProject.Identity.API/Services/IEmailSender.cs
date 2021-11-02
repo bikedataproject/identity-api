@@ -5,8 +5,25 @@ using System.Threading.Tasks;
 
 namespace BikeDataProject.Identity.API.Services
 {
+    /// <summary>
+    /// Abstract definition of a service to send emails.
+    /// </summary>
     public interface IEmailSender
     {
-        Task SendEmailAsync(string email, string subject, string message);
+        /// <summary>
+        /// Sends an email confirmation email.
+        /// </summary>
+        /// <param name="email">The email address.</param>
+        /// <param name="confirmationLink">The confirmation link.</param>
+        /// <returns></returns>
+        Task SendConfirmAsync(string email, string confirmationLink);
+        
+        /// <summary>
+        /// Sends a fitbit confirmation email.
+        /// </summary>
+        /// <param name="email">The email address.</param>
+        /// <param name="confirmationLink">The confirmation link.</param>
+        /// <returns></returns>
+        Task SendFitbitConfirmAsync(string email, string confirmationLink);
     }
 }

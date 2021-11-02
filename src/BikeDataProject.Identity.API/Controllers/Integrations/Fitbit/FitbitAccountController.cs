@@ -10,6 +10,7 @@ using Fitbit.Api.Portable;
 using Fitbit.Api.Portable.OAuth2;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
 namespace BikeDataProject.Identity.API.Controllers.Integrations.Fitbit
@@ -99,12 +100,13 @@ namespace BikeDataProject.Identity.API.Controllers.Integrations.Fitbit
             }
             
             // generate a confirmation token and build the url.
-            var confirmationToken = await _userManager.GenerateEmailConfirmationTokenBase64Async(user);
+            var confirmationTokenEncoded = await _userManager.GenerateEmailConfirmationTokenBase64Async(user);
+            var emailEncoded = user.Email.EncodeBase64();
             var uriBuilder = new UriBuilder(registerModel.ConfirmEmailUrl)
             {
-                Query = $"token={confirmationToken}&email={user.Email}"
+                Query = $"token={confirmationTokenEncoded}&email={emailEncoded}"
             };
-            await _emailSender.SendEmailAsync(registerModel.Email, "Bike Data Project email confirmation",
+            await _emailSender.SendFitbitConfirmAsync(registerModel.Email,
                 uriBuilder.Uri.ToString());
             _logger.LogDebug("Sent email verification email: {Url}", uriBuilder.Uri.ToString());
 

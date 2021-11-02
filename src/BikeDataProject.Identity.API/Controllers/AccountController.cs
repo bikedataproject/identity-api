@@ -76,16 +76,19 @@ namespace BikeDataProject.Identity.API.Controllers
         /// <returns></returns>
         [HttpGet("confirmemail")]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string email, string token) 
+        public async Task<IActionResult> ConfirmEmail(string email, string token)
         {
             if (!ModelState.IsValid) return BadRequest();
-            
-            var user = await _userManager.FindByEmailAsync(email);
+
+            // get the user.
+            var decodedEmail = email.DecodeBase64();
+            var user = await _userManager.FindByEmailAsync(decodedEmail);
             if (user == null)
             {
                 return BadRequest();
             }
 
+            // decode the token and confirm email.
             var decodeToken = EmailConfirmationTokenTools.DecodeConfirmationToken(token);
             var result = await _userManager.ConfirmEmailAsync(user, decodeToken);
 
@@ -94,7 +97,7 @@ namespace BikeDataProject.Identity.API.Controllers
                 // validation failed.
                 return BadRequest();
             }
-            
+
             // success, sign in the user.
             await _signInManager.SignInAsync(user, false);
             return Ok();
@@ -121,7 +124,7 @@ namespace BikeDataProject.Identity.API.Controllers
 
                 return Ok();
             }
-            
+
             // we need to create a new user.
             var user = new ApplicationUser
             {
@@ -137,21 +140,23 @@ namespace BikeDataProject.Identity.API.Controllers
                 result = await _userManager.CreateAsync(user);
             }
             else
-            { 
+            {
                 // a password was set, this is a user registering directly.
                 result = await _userManager.CreateAsync(user, model.Password);
             }
+
             if (result.Succeeded)
             {
                 _logger.LogInformation("User created a new account with password");
 
                 // generate a confirmation token and build the url.
-                var confirmationToken = await _userManager.GenerateEmailConfirmationTokenBase64Async(user);
+                var confirmationTokenEncoded = await _userManager.GenerateEmailConfirmationTokenBase64Async(user);
+                var emailEncoded = user.Email.EncodeBase64();
                 var uriBuilder = new UriBuilder(model.ConfirmEmailUrl)
                 {
-                    Query = $"token={confirmationToken}&email={user.Email}"
+                    Query = $"token={confirmationTokenEncoded}&email={emailEncoded}"
                 };
-                await _emailSender.SendEmailAsync(model.Email, "Bike Data Project email confirmation",
+                await _emailSender.SendConfirmAsync(model.Email,
                     uriBuilder.Uri.ToString());
                 _logger.LogDebug("Sent email verification email: {Url}", uriBuilder.Uri.ToString());
 
