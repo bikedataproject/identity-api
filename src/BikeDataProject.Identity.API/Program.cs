@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -166,9 +167,10 @@ namespace BikeDataProject.Identity.API
 
                         services.ConfigureApplicationCookie(options =>
                         {
-                            options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                            options.AccessDeniedPath = "/Identity/Account/AccessDenied";     
                             options.Cookie.Name = "BikeDataProjectAuthenticationCookie";
                             options.Cookie.HttpOnly = true;
+                            options.Cookie.SameSite = SameSiteMode.None;
                             options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                             options.LoginPath = "/login";
                             // ReturnUrlParameter requires 

@@ -99,7 +99,7 @@ namespace BikeDataProject.Identity.API.Controllers
             }
 
             // success, sign in the user.
-            await _signInManager.SignInAsync(user, false);
+            await _signInManager.SignInAsync(user, true);
             return Ok();
         }
 
@@ -125,6 +125,7 @@ namespace BikeDataProject.Identity.API.Controllers
                 return Ok();
             }
 
+            
             // we need to create a new user.
             var user = new ApplicationUser
             {

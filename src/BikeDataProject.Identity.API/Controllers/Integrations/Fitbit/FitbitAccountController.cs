@@ -8,6 +8,7 @@ using BikeDataProject.Identity.API.Data.Integrations.Fitbit;
 using BikeDataProject.Identity.API.Services;
 using Fitbit.Api.Portable;
 using Fitbit.Api.Portable.OAuth2;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BikeDataProject.Identity.API.Controllers.Integrations.Fitbit
 {
+    [Authorize]
     public class FitbitAccountController : ControllerBase
     {
         private readonly ILogger<FitbitAccountController> _logger;
@@ -34,56 +36,41 @@ namespace BikeDataProject.Identity.API.Controllers.Integrations.Fitbit
             _configuration = configuration;
             _logger = logger;
         }
-        
+
         /// <summary>
         /// Gets the authorize url to redirect to to start authorization.
         /// </summary>
         /// <returns></returns>
-        [HttpPost("/fitbit/register")]
-        public async Task<ActionResult<FitbitAccountRegisterResponseModel>> Register([FromBody] FitbitAccountRegisterModel registerModel)
+        [AllowAnonymous]
+        [HttpPost("/fitbit/authorize")]
+        public async Task<ActionResult<FitbitAccountAuthorizeResponseModel>> Authorize(
+            [FromBody] FitbitAccountAuthorizeModel registerModel)
         {
-            // there are 3 possible flows here:
-            // 1: a user is logged in
-            //    - if an email address is provided this is seen as a conflict, the user is already logged in.
-            //    - we respond with an authorize url for fitbit and nothing more, on callback the logged in user will be linked with their fitbit account.
-            // 2: email address is not provided.
-            //    - we respond with an authorize url for fitbit and nothing more.
-            // 3: email address is provided.
-            //   we cannot accept an email address without confirming it so we send a url to the users' email that:
-            //    - confirms their email address.
-            //    - starts the authorization flow.
-
-            // flow #1
-            if (_signInManager.IsSignedIn(this.User))
-            {
-                if (!string.IsNullOrWhiteSpace(registerModel.Email))
-                {
-                    // when the user is logged in, it doesn't make sense to give their email again
-                    // so we expect this to happen without an email provided.
-                    return Conflict();
-                }
-                
-                _logger.LogDebug("Authorization requested with user logged in");
-                return new FitbitAccountRegisterResponseModel {
-                    Url = this.GenerateAuthorizeUrl(_configuration.FitbitAppCredentials, registerModel.RedirectUrl)
-                };
-            }
+            if (!ModelState.IsValid) return BadRequest();
             
-            // flow #2
-            if (string.IsNullOrWhiteSpace(registerModel.Email)) 
+            // we respond with an authorize url for fitbit and nothing more
+            // potentially, on callback the logged in user will be linked with their fitbit account
+            //   or a new account will be created at that point.
+            
+            _logger.LogDebug("Authorization requested with user logged in");
+            return new FitbitAccountAuthorizeResponseModel
             {
-                _logger.LogDebug("Authorization requested without email");
-                return new FitbitAccountRegisterResponseModel {
-                    Url = this.GenerateAuthorizeUrl(_configuration.FitbitAppCredentials, registerModel.RedirectUrl)
-                };
-            }
+                Url = this.GenerateAuthorizeUrl(_configuration.FitbitAppCredentials, registerModel.RedirectUrl)
+            };
+        }
 
-            // flow #3
+        /// <summary>
+        /// Register a new user using the given email address and sends a confirmation link for fitbit account linking.
+        /// </summary>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpPost("/fitbit/register")]
+        public async Task<ActionResult> Register([FromBody] FitbitAccountRegisterModel registerModel)
+        {
+            if (!ModelState.IsValid) return BadRequest();
+            
             // create a new user with the given email address and no password.
-            if (string.IsNullOrWhiteSpace(registerModel.ConfirmEmailUrl))
-            {
-                return BadRequest();
-            }
+            // or get the existing user if there is a user with an unconfirmed password.
             var user = new ApplicationUser()
             {
                 UserName = registerModel.Email,
@@ -94,9 +81,19 @@ namespace BikeDataProject.Identity.API.Controllers.Integrations.Fitbit
             {
                 if (result.Errors.Any(x => x.Code == "DuplicateEmail"))
                 {
-                    return Conflict();
+                    user = await _userManager.FindByEmailAsync(registerModel.Email);
+
+                    if (user.EmailConfirmed)
+                    {
+                        // there is already a user with the given email address.
+                        // TODO: send a link anyway but tell the user to login and or recover their password.
+                        return Conflict();
+                    }
                 }
-                throw new Exception("Failed to create user");
+                else
+                {
+                    throw new Exception("Failed to create user");
+                }
             }
             
             // generate a confirmation token and build the url.
@@ -110,20 +107,19 @@ namespace BikeDataProject.Identity.API.Controllers.Integrations.Fitbit
                 uriBuilder.Uri.ToString());
             _logger.LogDebug("Sent email verification email: {Url}", uriBuilder.Uri.ToString());
 
-            return new FitbitAccountRegisterResponseModel()
-            {
-                EmailSent = true
-            };
+            return Ok();
         }
 
         /// <summary>
         /// Register the fitbit user using the given code from the authorize callback to access the fitbit api.
         /// </summary>
         /// <param name="code">The code.</param>
+        /// <param name="redirectUrl">The redirect url that was used to generate the code.</param>
         /// <returns></returns>
         /// <exception cref="ApplicationException"></exception>
+        [AllowAnonymous]
         [HttpGet("/fitbit/register/callback")]
-        public async Task<IActionResult> Register(string code)
+        public async Task<IActionResult> Register(string code, string redirectUrl)
         {
             // there are 3 possible flows here:
             // 1: a fitbit user with the same details already exists
@@ -135,8 +131,7 @@ namespace BikeDataProject.Identity.API.Controllers.Integrations.Fitbit
             
             _logger.LogDebug("Request to register: {Code}", code);
 
-            var callback = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/register";
-            var authenticator = new OAuth2Helper(_configuration.FitbitAppCredentials, callback);
+            var authenticator = new OAuth2Helper(_configuration.FitbitAppCredentials, redirectUrl);
 
             _logger.LogDebug("Authenticator created");
 
@@ -205,26 +200,27 @@ namespace BikeDataProject.Identity.API.Controllers.Integrations.Fitbit
                     await _db.Users.AddAsync(user);
                     await _db.SaveChangesAsync();
 
-                    // create fitbit user.
-                    fitbitUser = new FitbitUser
-                    {
-                        ApplicationUserId = user.Id,
-                        ApplicationUser = user,
-                        UserId = newToken.UserId,
-                        Scope = newToken.Scope,
-                        Token = newToken.Token,
-                        ExpiresIn = newToken.ExpiresIn,
-                        RefreshToken = newToken.RefreshToken,
-                        TokenType = newToken.TokenType,
-                        TokenCreated = DateTime.UtcNow
-                    };
-                    await _db.FitbitUsers.AddAsync(fitbitUser);
-                    await _db.SaveChangesAsync();
-                    _logger.LogInformation("User created a new account using a fitbit account");
-
                     // sign in user.
                     await _signInManager.SignInAsync(user, isPersistent: false);
+                    _logger.LogDebug("User created and signed in");
                 }
+
+                // create fitbit user.
+                fitbitUser = new FitbitUser
+                {
+                    ApplicationUserId = user.Id,
+                    ApplicationUser = user,
+                    UserId = newToken.UserId,
+                    Scope = newToken.Scope,
+                    Token = newToken.Token,
+                    ExpiresIn = newToken.ExpiresIn,
+                    RefreshToken = newToken.RefreshToken,
+                    TokenType = newToken.TokenType,
+                    TokenCreated = DateTime.UtcNow
+                };
+                await _db.FitbitUsers.AddAsync(fitbitUser);
+                await _db.SaveChangesAsync();
+                _logger.LogDebug("Fitbit user created");
             }
 
             return Ok();
