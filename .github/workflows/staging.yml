@@ -28,11 +28,11 @@ jobs:
     - name: Publish project
       run: dotnet publish -c release
       working-directory: ./src/BikeDataProject.Identity.API/
-    - name: Login to Dock Hub
-      run: echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u xivk --password-stdin
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag bikedataproject/identity-api:staging --tag bikedataproject/identity-api:staging-0.$GITHUB_RUN_NUMBER
       working-directory: ./src/BikeDataProject.Identity.API/
+    - name: Login to Dock Hub
+      run: echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u xivk --password-stdin
     - name: Publish the image.
       run: docker push bikedataproject/identity-api:staging
       working-directory: ./src/BikeDataProject.Identity.API/
