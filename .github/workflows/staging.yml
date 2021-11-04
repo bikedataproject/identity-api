@@ -50,4 +50,4 @@ jobs:
       run: dotnet pack --configuration release
       working-directory: ./src/BikeDataProject.Identity.Db/
     - name: Nuget push
-      run: dotnet nuget push **/*.nupkg --skip-duplicate -k ${{ secrets.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/bikedataproject/index.json
+      run: dotnet nuget push **/*.nupkg --skip-duplicate -k ${{ secrets.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/anyways-open/index.json
