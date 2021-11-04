@@ -1,11 +1,10 @@
-FROM mcr.microsoft.com/dotnet/aspnet:2.1
+FROM mcr.microsoft.com/dotnet/sdk:5.0
 
 # copy api assemblies and files
 RUN mkdir /var/app
 RUN mkdir /var/app/data
 RUN mkdir /var/app/logs
-COPY ./bin/release/netcoreapp2.1/publish /var/app
-COPY appsettings.json /var/app/appsettings.json
+COPY ./bin/release/net5.0/publish /var/app
 
 # couple data folder data volume.
 VOLUME ["/var/app/data"]
