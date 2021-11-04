@@ -25,8 +25,6 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    - name: Add GitHub Nuget Source
-      run: dotnet nuget add source https://nuget.pkg.github.com/bikedataproject/index.json -n github -u xivk -p ${{secrets.PACKAGES_SECRET }} --store-password-in-clear-text
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
@@ -51,8 +49,5 @@ jobs:
     - name: Generate Nuget package for db.
       run: dotnet pack --configuration release
       working-directory: ./src/BikeDataProject.Identity.Db/
-    - name: Push Nuget package(s)
-      run: dotnet nuget push **/*.nupkg --source github --skip-duplicate
-      working-directory: ./src/BikeDataProject.Identity.Db/
-      env:
-        DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER: false
+    - name: Nuget push
+      run: dotnet nuget push **/*.nupkg --skip-duplicate -k ${{ secrets.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/bikedataproject/index.json
