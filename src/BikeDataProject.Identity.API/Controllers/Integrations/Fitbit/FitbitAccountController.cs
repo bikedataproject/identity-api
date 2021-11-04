@@ -3,15 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using BikeDataProject.Identity.API.Extensions;
 using BikeDataProject.Identity.API.Controllers.Integrations.Fitbit.Models;
-using BikeDataProject.Identity.API.Data;
-using BikeDataProject.Identity.API.Data.Integrations.Fitbit;
 using BikeDataProject.Identity.API.Services;
+using BikeDataProject.Identity.Db;
+using BikeDataProject.Identity.Db.Integrations.Fitbit;
 using Fitbit.Api.Portable;
 using Fitbit.Api.Portable.OAuth2;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
 namespace BikeDataProject.Identity.API.Controllers.Integrations.Fitbit

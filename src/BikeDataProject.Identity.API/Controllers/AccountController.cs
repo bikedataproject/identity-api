@@ -8,6 +8,7 @@ using BikeDataProject.Identity.API.Data;
 using BikeDataProject.Identity.API.Extensions;
 using BikeDataProject.Identity.API.Models.AccountViewModels;
 using BikeDataProject.Identity.API.Services;
+using BikeDataProject.Identity.Db;
 
 namespace BikeDataProject.Identity.API.Controllers
 {

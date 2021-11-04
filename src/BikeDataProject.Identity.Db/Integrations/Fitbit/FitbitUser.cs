@@ -1,6 +1,6 @@
 using System;
 
-namespace BikeDataProject.Identity.API.Data.Integrations.Fitbit
+namespace BikeDataProject.Identity.Db.Integrations.Fitbit
 {
     /// <summary>
     /// Represents a fitbit user.
@@ -56,21 +56,6 @@ namespace BikeDataProject.Identity.API.Data.Integrations.Fitbit
         /// The timestamp for when the token was created.
         /// </summary>
         public DateTime TokenCreated { get; set; }
-        
-        /// <summary>
-        /// All the history was synced.
-        /// </summary>
-        public bool AllSynced { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the subscription id used.
-        /// </summary>
-        public string SubscriptionId { get; set; }
-        
-        /// <summary>
-        /// The timestamp of the latest synced activity.
-        /// </summary>
-        public DateTime? LatestSyncedStamp { get; set; }
 
         /// <summary>
         /// The id of this user in the bike data project db.

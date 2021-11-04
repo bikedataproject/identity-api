@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using BikeDataProject.Identity.Db.Integrations.Fitbit;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using BikeDataProject.Identity.API.Models;
-using BikeDataProject.Identity.API.Data.Integrations.Fitbit;
 
-namespace BikeDataProject.Identity.API.Data
+namespace BikeDataProject.Identity.Db
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
@@ -23,12 +18,6 @@ namespace BikeDataProject.Identity.API.Data
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
         }
-        
-        public DbSet<ApplicationOrganizationRole> OrganizationRoles { get; set; }
-        
-        public DbSet<ApplicationOrganizationUser> OrganizationUsers { get; set; }
-        
-        public DbSet<ApplicationOrganization> Organizations { get; set; }
         
         public DbSet<FitbitUser> FitbitUsers { get; set; }
     }

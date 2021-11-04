@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BikeDataProject.Identity.AP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fitbit", "src\Fitbit\Fitbit.csproj", "{6B69D441-DB67-4574-A2BE-9D5D27B9B0A2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BikeDataProject.Identity.Db", "src\BikeDataProject.Identity.Db\BikeDataProject.Identity.Db.csproj", "{BED4696E-36E0-4065-8027-6BFC3AC770AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{6B69D441-DB67-4574-A2BE-9D5D27B9B0A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B69D441-DB67-4574-A2BE-9D5D27B9B0A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B69D441-DB67-4574-A2BE-9D5D27B9B0A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BED4696E-36E0-4065-8027-6BFC3AC770AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BED4696E-36E0-4065-8027-6BFC3AC770AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BED4696E-36E0-4065-8027-6BFC3AC770AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BED4696E-36E0-4065-8027-6BFC3AC770AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,5 +45,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{5DAE40AE-615F-417C-932B-E3621726B916} = {A0464460-C303-450F-AD86-2DAC03E35389}
 		{6B69D441-DB67-4574-A2BE-9D5D27B9B0A2} = {A0464460-C303-450F-AD86-2DAC03E35389}
+		{BED4696E-36E0-4065-8027-6BFC3AC770AD} = {A0464460-C303-450F-AD86-2DAC03E35389}
 	EndGlobalSection
 EndGlobal

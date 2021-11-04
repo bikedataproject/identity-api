@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BikeDataProject.Identity.Db\BikeDataProject.Identity.Db.csproj" />
     <ProjectReference Include="..\Fitbit\Fitbit.csproj" />
   </ItemGroup>
 

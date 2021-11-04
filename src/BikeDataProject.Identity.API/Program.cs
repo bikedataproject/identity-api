@@ -9,6 +9,7 @@ using BikeDataProject.Identity.API.Extensions;
 using BikeDataProject.Identity.API.Policies;
 using BikeDataProject.Identity.API.Services;
 using BikeDataProject.Identity.API.Services.Mailjet;
+using BikeDataProject.Identity.Db;
 using Fitbit.Api.Portable;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -95,12 +96,11 @@ namespace BikeDataProject.Identity.API
                         // setup database.
                         var connectionString =
                             await hostingContext.Configuration.GetPostgresConnectionString("IDENTITY_DB");
-                        //Log.Logger.Debug("Connection string: {ConnectionString}", connectionString);
-
+                        var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
                         services
                             .AddEntityFrameworkNpgsql()
                             .AddDbContext<ApplicationDbContext>(options =>
-                                options.UseNpgsql(connectionString));
+                                options.UseNpgsql(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly)));
 
                         services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                             {
@@ -143,7 +143,6 @@ namespace BikeDataProject.Identity.API
                         services.AddOpenApiDocument(); // add OpenAPI v3 document
 
                         // configure identity server with in-memory stores, keys, clients and scopes
-                        var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
                         services.AddIdentityServer()
                             .AddDeveloperSigningCredential()
                             .AddConfigurationStore(options =>

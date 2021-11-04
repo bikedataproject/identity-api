@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using BikeDataProject.Identity.API.Data;
+using BikeDataProject.Identity.Db;
 using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;

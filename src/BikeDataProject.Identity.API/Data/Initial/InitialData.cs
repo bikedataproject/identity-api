@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4;
+using BikeDataProject.Identity.Db;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
@@ -73,17 +73,6 @@ namespace BikeDataProject.Identity.API.Data.Initial
                 serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             await applicationDbContext.Database.MigrateAsync();
 
-            // adds organization roles that aren't there yet.
-            foreach (var role in InitialData.GetApplicationOrganizationRoles())
-            {
-                var dbResource =
-                    applicationDbContext.OrganizationRoles.SingleOrDefault(c => c.Key == role.Key);
-                if (dbResource != null) continue;
-
-                Log.Information("Adding organization role {RoleKey} to database", role.Key);
-                applicationDbContext.OrganizationRoles.Add(role);
-            }
-
             await applicationDbContext.SaveChangesAsync();
         }
 
@@ -109,23 +98,6 @@ namespace BikeDataProject.Identity.API.Data.Initial
                 new("roles",
                     "Roles",
                     new[] { "role" })
-            };
-        }
-
-        private static IEnumerable<ApplicationOrganizationRole> GetApplicationOrganizationRoles()
-        {
-            return new[]
-            {
-                new ApplicationOrganizationRole()
-                {
-                    Key = "member",
-                    Name = "Member"
-                },
-                new ApplicationOrganizationRole()
-                {
-                    Key = "admin",
-                    Name = "Admin"
-                }
             };
         }
     }
