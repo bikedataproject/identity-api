@@ -28,7 +28,6 @@ jobs:
     - name: Publish project
       run: dotnet publish -c release
       working-directory: ./src/BikeDataProject.Identity.API/
-    - run: mv ./src/BikeDataProject.Identity.API/appsettings.staging.json ./src/BikeDataProject.Identity.API/appsettings.json
     - name: Login to Dock Hub
       run: echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u xivk --password-stdin
     - name: Build the Docker image
