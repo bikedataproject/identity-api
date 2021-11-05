@@ -24,7 +24,7 @@ namespace BikeDataProject.Identity.Db
                     var connectionString =
                         await hc.Configuration.GetPostgresConnectionString("IDENTITY_DB");
                     
-                    s.AddDbContext<ApplicationDbContext>(o => o.UseNpgsql(connectionString));
+                    s.AddDbContext<IdentityDbContext>(o => o.UseNpgsql(connectionString));
                     
                     s.AddHostedService<Startup>();
                 });

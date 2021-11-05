@@ -20,13 +20,13 @@ namespace BikeDataProject.Identity.API.Controllers.Integrations.Fitbit
     {
         private readonly ILogger<FitbitAccountController> _logger;
         private readonly FitbitAccountControllerSettings _configuration;
-        private readonly ApplicationDbContext _db;
+        private readonly IdentityDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         
         public FitbitAccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, 
-            IEmailSender emailSender, ApplicationDbContext db, FitbitAccountControllerSettings configuration, ILogger<FitbitAccountController> logger)
+            IEmailSender emailSender, IdentityDbContext db, FitbitAccountControllerSettings configuration, ILogger<FitbitAccountController> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;

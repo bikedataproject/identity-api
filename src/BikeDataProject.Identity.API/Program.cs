@@ -99,7 +99,7 @@ namespace BikeDataProject.Identity.API
                         var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
                         services
                             .AddEntityFrameworkNpgsql()
-                            .AddDbContext<ApplicationDbContext>(options =>
+                            .AddDbContext<IdentityDbContext>(options =>
                                 options.UseNpgsql(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly)));
 
                         services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -113,7 +113,7 @@ namespace BikeDataProject.Identity.API
                                 options.SignIn.RequireConfirmedEmail = true;
                                 options.User.RequireUniqueEmail = true;
                             })
-                            .AddEntityFrameworkStores<ApplicationDbContext>()
+                            .AddEntityFrameworkStores<IdentityDbContext>()
                             .AddDefaultTokenProviders();
 
                         services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>,

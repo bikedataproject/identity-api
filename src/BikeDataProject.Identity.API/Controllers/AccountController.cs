@@ -15,7 +15,7 @@ namespace BikeDataProject.Identity.API.Controllers
     [Authorize]
     public class AccountController : ControllerBase
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IdentityDbContext _dbContext;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
@@ -26,7 +26,7 @@ namespace BikeDataProject.Identity.API.Controllers
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ILogger<AccountController> logger,
-            ApplicationDbContext dbContext)
+            IdentityDbContext dbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;

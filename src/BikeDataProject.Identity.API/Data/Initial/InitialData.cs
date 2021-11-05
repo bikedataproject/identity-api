@@ -70,7 +70,7 @@ namespace BikeDataProject.Identity.API.Data.Initial
 
             // do application db context.
             var applicationDbContext =
-                serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                serviceScope.ServiceProvider.GetRequiredService<IdentityDbContext>();
             await applicationDbContext.Database.MigrateAsync();
 
             await applicationDbContext.SaveChangesAsync();

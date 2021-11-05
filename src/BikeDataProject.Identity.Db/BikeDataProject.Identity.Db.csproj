@@ -5,7 +5,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>BikeDataProject.Identity.Db</RootNamespace>
     <PackageId>BikeDataProject.Identity.Db</PackageId>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <Authors>Bike Data Project contributors</Authors>
     <Company>Open Knowledge Belgium VZW</Company>
     <PackageDescription>The data model and entities for the Identity API.</PackageDescription>

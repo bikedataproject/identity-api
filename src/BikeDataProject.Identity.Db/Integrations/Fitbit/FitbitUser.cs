@@ -56,10 +56,5 @@ namespace BikeDataProject.Identity.Db.Integrations.Fitbit
         /// The timestamp for when the token was created.
         /// </summary>
         public DateTime TokenCreated { get; set; }
-
-        /// <summary>
-        /// The id of this user in the bike data project db.
-        /// </summary>
-        public int? BikeDataProjectId { get; set; }
     }
 }
