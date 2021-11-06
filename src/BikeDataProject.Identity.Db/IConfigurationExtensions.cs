@@ -24,7 +24,7 @@ namespace BikeDataProject.Identity.Db
             // get environment variable prefix.
             // do this after the deploy time settings to make sure this is configurable at deploytime.
             configuration = configurationBuilder.Build();
-            var envVarPrefix = configuration["env-var-prefix"] ?? "ANYWAYS_";
+            var envVarPrefix = configuration["env-var-prefix"] ?? "BIKEDATA_";
 
             return (deployTimeSettings, envVarPrefix);
         }
