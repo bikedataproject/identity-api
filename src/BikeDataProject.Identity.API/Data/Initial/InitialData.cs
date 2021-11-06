@@ -42,7 +42,7 @@ namespace BikeDataProject.Identity.API.Data.Initial
                 context.Clients.Add(client.ToEntity());
             }
 
-            await ((DbContext)context).SaveChangesAsync();
+            await context.SaveChangesAsync();
 
             // adds identity resources that aren't there yet.
             foreach (var resource in InitialData.GetIdentityResources())
@@ -54,7 +54,7 @@ namespace BikeDataProject.Identity.API.Data.Initial
                 context.IdentityResources.Add(resource.ToEntity());
             }
 
-            await ((DbContext)context).SaveChangesAsync();
+            await context.SaveChangesAsync();
 
             // adds api resources that aren't there yet.
             foreach (var apiResource in InitialData.GetApiResources())
@@ -66,14 +66,14 @@ namespace BikeDataProject.Identity.API.Data.Initial
                 context.ApiResources.Add(apiResource.ToEntity());
             }
 
-            await ((DbContext)context).SaveChangesAsync();
+            await context.SaveChangesAsync();
 
             // do application db context.
-            var applicationDbContext =
+            var identityDbContext =
                 serviceScope.ServiceProvider.GetRequiredService<IdentityDbContext>();
-            await applicationDbContext.Database.MigrateAsync();
+            await identityDbContext.Database.MigrateAsync();
 
-            await applicationDbContext.SaveChangesAsync();
+            await identityDbContext.SaveChangesAsync();
         }
 
         private static IEnumerable<ApiResource> GetApiResources()
